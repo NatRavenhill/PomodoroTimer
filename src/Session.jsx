@@ -7,7 +7,8 @@ class Session extends Component {
       breakLength: 5,
       sessionLength: 25,
       isRunning: false,
-      seconds: 60,
+      seconds: 0,
+      minutes:25
     };
 
     this.handleSessionIncrement = this.handleSessionIncrement.bind(this);
@@ -50,8 +51,9 @@ class Session extends Component {
     this.setState({
       breakLength: 5,
       sessionLength: 25,
-      seconds: 60,
+      seconds: 0,
       isRunning: false,
+      minutes: 25
     });
     clearInterval(this.timerID);
   };
@@ -62,7 +64,15 @@ class Session extends Component {
         seconds: state.seconds - 1,
         isRunning: true,
       }));
-    } else {
+    } 
+    else if(this.state.minutes > 0){
+      this.setState((state) => ({
+        minutes:state.minutes - 1,
+        seconds: 59,
+        isRunning: true,
+      }));
+    }
+    else {
       clearInterval(this.timerID);
     }
   };
@@ -83,7 +93,7 @@ class Session extends Component {
       <div className="App">
         <h1 id="timer-label">Session</h1>
         <div className="tomato">
-          <p id="time-left">{this.state.seconds}</p>
+          <p id="time-left">{this.state.minutes}:{this.state.seconds.toString().padStart(2, "0")}</p>
           <button id="start_stop" onClick={this.handleStartStop.bind(this)}>
             start/stop
           </button>
