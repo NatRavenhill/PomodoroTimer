@@ -6,12 +6,15 @@ class Session extends Component {
     this.state = {
       breakLength: 5,
       sessionLength: 25,
+      isRunning: false,
+      seconds: 60,
     };
 
     this.handleSessionIncrement = this.handleSessionIncrement.bind(this);
     this.handleSessionDecrement = this.handleSessionDecrement.bind(this);
     this.handleBreakIncrement = this.handleBreakIncrement.bind(this);
     this.handleBreakDecrement = this.handleBreakDecrement.bind(this);
+    this.tick = this.tick.bind(this);
   }
 
   // Add FCC test script
@@ -29,7 +32,7 @@ class Session extends Component {
   };
 
   handleSessionDecrement = () => {
-    if (this.state.sessionLength > 0)
+    if (this.state.sessionLength > 1)
       this.setState({ sessionLength: this.state.sessionLength - 1 });
   };
 
@@ -39,8 +42,40 @@ class Session extends Component {
   };
 
   handleBreakDecrement = () => {
-    if (this.state.breakLength > 0)
+    if (this.state.breakLength > 1)
       this.setState({ breakLength: this.state.breakLength - 1 });
+  };
+
+  handleReset = () => {
+    this.setState({
+      breakLength: 5,
+      sessionLength: 25,
+      seconds: 60,
+      isRunning: false,
+    });
+    clearInterval(this.timerID);
+  };
+
+  tick = () => {
+    if (this.state.seconds > 0) {
+      this.setState((state) => ({
+        seconds: state.seconds - 1,
+        isRunning: true,
+      }));
+    } else {
+      clearInterval(this.timerID);
+    }
+  };
+
+  handleStartStop = () => {
+    if (this.state.isRunning) {
+      clearInterval(this.timerID);
+      this.setState({
+        isRunning: false,
+      });
+    } else {
+      this.timerID = setInterval(this.tick, 1000);
+    }
   };
 
   render() {
@@ -48,9 +83,13 @@ class Session extends Component {
       <div className="App">
         <h1 id="timer-label">Session</h1>
         <div className="tomato">
-          <p id="time-left">25:00</p>
-          <button id="start_stop">start/stop</button>
-          <button id="reset">reset</button>
+          <p id="time-left">{this.state.seconds}</p>
+          <button id="start_stop" onClick={this.handleStartStop.bind(this)}>
+            start/stop
+          </button>
+          <button id="reset" onClick={this.handleReset.bind(this)}>
+            reset
+          </button>
         </div>
 
         <div className="Break-length">
