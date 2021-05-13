@@ -12,7 +12,7 @@ class Session extends Component {
       timerLabel: "Session",
       isBreak: false,
     };
-    
+
     this.tick = this.tick.bind(this);
     this.handleBreakTime = this.handleBreakTime.bind(this);
     this.setBreakLength = this.setBreakLength.bind(this);
@@ -88,29 +88,37 @@ class Session extends Component {
       timerLabel: "Session",
       isBreak: false,
     });
-    clearInterval(this.timerID);
   };
 
   tick = () => {
+    if (!this.state.isRunning) return;
+
     if (this.state.seconds > 0) {
       this.setState((state) => ({
         seconds: state.seconds - 1,
-        isRunning: true,
       }));
     } else if (this.state.minutes > 0) {
       this.setState((state) => ({
         minutes: state.minutes - 1,
         seconds: 59,
-        isRunning: true,
       }));
     } else {
       this.handleBreakTime();
     }
+
+    setTimeout(this.tick, 1000);
   };
 
   handleBreakTime = () => {
     if (this.state.isBreak) {
-      this.handleReset();
+      this.setState({
+        isRunning: true,
+        seconds: 0,
+        minutes: this.state.sessionLength,
+        timerLabel: "Session",
+        isBreak: false,
+      });
+      setTimeout(this.tick, 1000);
     } else {
       this.setState((state) => ({
         isBreak: true,
@@ -123,12 +131,16 @@ class Session extends Component {
 
   handleStartStop = () => {
     if (this.state.isRunning) {
-      clearInterval(this.timerID);
       this.setState({
         isRunning: false,
       });
     } else {
-      this.timerID = setInterval(this.tick, 1000);
+      this.setState(
+        {
+          isRunning: true,
+        },
+        this.tick
+      );
     }
   };
 
@@ -152,10 +164,16 @@ class Session extends Component {
         <div className="Break-length">
           <p id="break-label">Break Length</p>
           <p id="break-length">{this.state.breakLength}</p>
-          <button id="break-increment" onClick={this.handleBreakIncrement.bind(this)}>
+          <button
+            id="break-increment"
+            onClick={this.handleBreakIncrement.bind(this)}
+          >
             +
           </button>
-          <button id="break-decrement" onClick={this.handleBreakDecrement.bind(this)}>
+          <button
+            id="break-decrement"
+            onClick={this.handleBreakDecrement.bind(this)}
+          >
             -
           </button>
         </div>
@@ -163,10 +181,16 @@ class Session extends Component {
         <div className="Session-length">
           <p id="session-label">Session Length</p>
           <p id="session-length">{this.state.sessionLength}</p>
-          <button id="session-increment" onClick={this.handleSessionIncrement.bind(this)}>
+          <button
+            id="session-increment"
+            onClick={this.handleSessionIncrement.bind(this)}
+          >
             +
           </button>
-          <button id="session-decrement" onClick={this.handleSessionDecrement.bind(this)}>
+          <button
+            id="session-decrement"
+            onClick={this.handleSessionDecrement.bind(this)}
+          >
             -
           </button>
         </div>
