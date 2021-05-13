@@ -8,6 +8,8 @@ class Session extends Component {
     this.handleBreakTime = this.handleBreakTime.bind(this);
     this.setBreakLength = this.setBreakLength.bind(this);
     this.setSessionLength = this.setSessionLength.bind(this);
+
+    this.beepRef = React.createRef();
   }
 
   defaultState = () => {
@@ -82,6 +84,7 @@ class Session extends Component {
   };
 
   handleReset = () => {
+    this.beepRef.current.load();
     this.setState(this.defaultState());
   };
 
@@ -98,11 +101,11 @@ class Session extends Component {
         seconds: 59,
       }));
     } else {
+      this.beepRef.current.play();
       this.handleBreakTime();
     }
 
     setTimeout(this.tick, 1000);
-
   };
 
   handleBreakTime = () => {
@@ -133,7 +136,9 @@ class Session extends Component {
       this.setState(
         {
           isRunning: true,
-        }, this.tick);
+        },
+        this.tick
+      );
     }
   };
 
@@ -187,6 +192,12 @@ class Session extends Component {
             -
           </button>
         </div>
+
+        <audio
+          id="beep"
+          ref={this.beepRef}
+          src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+        />
       </div>
     );
   }
