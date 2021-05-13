@@ -3,7 +3,15 @@ import React, { Component } from "react";
 class Session extends Component {
   constructor() {
     super();
-    this.state = {
+    this.state = this.defaultState();
+    this.tick = this.tick.bind(this);
+    this.handleBreakTime = this.handleBreakTime.bind(this);
+    this.setBreakLength = this.setBreakLength.bind(this);
+    this.setSessionLength = this.setSessionLength.bind(this);
+  }
+
+  defaultState = () => {
+    return {
       breakLength: 5,
       sessionLength: 25,
       isRunning: false,
@@ -12,12 +20,7 @@ class Session extends Component {
       timerLabel: "Session",
       isBreak: false,
     };
-
-    this.tick = this.tick.bind(this);
-    this.handleBreakTime = this.handleBreakTime.bind(this);
-    this.setBreakLength = this.setBreakLength.bind(this);
-    this.setSessionLength = this.setSessionLength.bind(this);
-  }
+  };
 
   // Add FCC test script
   componentWillMount() {
@@ -79,15 +82,7 @@ class Session extends Component {
   };
 
   handleReset = () => {
-    this.setState({
-      breakLength: 5,
-      sessionLength: 25,
-      isRunning: false,
-      seconds: 0,
-      minutes: 25,
-      timerLabel: "Session",
-      isBreak: false,
-    });
+    this.setState(this.defaultState());
   };
 
   tick = () => {
@@ -107,6 +102,7 @@ class Session extends Component {
     }
 
     setTimeout(this.tick, 1000);
+
   };
 
   handleBreakTime = () => {
@@ -118,7 +114,6 @@ class Session extends Component {
         timerLabel: "Session",
         isBreak: false,
       });
-      setTimeout(this.tick, 1000);
     } else {
       this.setState((state) => ({
         isBreak: true,
@@ -138,9 +133,7 @@ class Session extends Component {
       this.setState(
         {
           isRunning: true,
-        },
-        this.tick
-      );
+        }, this.tick);
     }
   };
 
@@ -150,7 +143,7 @@ class Session extends Component {
         <h1 id="timer-label">{this.state.timerLabel}</h1>
         <div className="tomato">
           <p id="time-left">
-            {this.state.minutes}:
+            {this.state.minutes.toString().padStart(2, "0")}:
             {this.state.seconds.toString().padStart(2, "0")}
           </p>
           <button id="start_stop" onClick={this.handleStartStop.bind(this)}>
