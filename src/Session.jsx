@@ -1,4 +1,7 @@
 import React, { Component } from "react";
+import "./Session.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlay, faPause, faRedo, faPlusCircle, faMinusCircle } from "@fortawesome/free-solid-svg-icons";
 
 class Session extends Component {
   constructor() {
@@ -152,47 +155,48 @@ class Session extends Component {
             {this.state.seconds.toString().padStart(2, "0")}
           </p>
           <button id="start_stop" onClick={this.handleStartStop.bind(this)}>
-            start/stop
+            <FontAwesomeIcon icon={faPlay} color='#FDE9B0' size='2x'/>
+            <FontAwesomeIcon icon={faPause} color='#FDE9B0' size='2x'/>
           </button>
           <button id="reset" onClick={this.handleReset.bind(this)}>
-            reset
+            <FontAwesomeIcon icon={faRedo} color='#FDE9B0'  size="2x"/>
           </button>
         </div>
 
-        <div className="Break-length">
-          <p id="break-label">Break Length</p>
-          <p id="break-length">{this.state.breakLength}</p>
-          <button
-            id="break-increment"
-            onClick={this.handleBreakIncrement.bind(this)}
-          >
-            +
-          </button>
-          <button
-            id="break-decrement"
-            onClick={this.handleBreakDecrement.bind(this)}
-          >
-            -
-          </button>
+        <div className="gridClass">
+          <div className="Break-length">
+            <h2 id="break-label">Break Length</h2>
+            <h3 id="break-length">{this.state.breakLength}</h3>
+            <button
+              id="break-decrement"
+              onClick={this.handleBreakDecrement.bind(this)}
+            >
+              <FontAwesomeIcon icon={faMinusCircle} size="2x"/>
+            </button>
+            <button
+              id="break-increment"
+              onClick={this.handleBreakIncrement.bind(this)}
+            >
+              <FontAwesomeIcon icon={faPlusCircle} size="2x"/>
+            </button>
+          </div>
+          <div className="Session-length">
+            <h2 id="session-label">Session Length</h2>
+            <h3 id="session-length">{this.state.sessionLength}</h3>
+            <button
+              id="session-decrement"
+              onClick={this.handleSessionDecrement.bind(this)}
+            >
+             <FontAwesomeIcon icon={faMinusCircle} size="2x"/>
+            </button>
+            <button
+              id="session-increment"
+              onClick={this.handleSessionIncrement.bind(this)}
+            >
+              <FontAwesomeIcon icon={faPlusCircle} size="2x"/>
+            </button>
+          </div>
         </div>
-
-        <div className="Session-length">
-          <p id="session-label">Session Length</p>
-          <p id="session-length">{this.state.sessionLength}</p>
-          <button
-            id="session-increment"
-            onClick={this.handleSessionIncrement.bind(this)}
-          >
-            +
-          </button>
-          <button
-            id="session-decrement"
-            onClick={this.handleSessionDecrement.bind(this)}
-          >
-            -
-          </button>
-        </div>
-
         <audio
           id="beep"
           ref={this.beepRef}

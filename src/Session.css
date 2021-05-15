@@ -1,0 +1,45 @@
+:root {
+  --red: #f40000;
+  --green: #4cb944;
+  --gold: #f9cb40;
+  --white: #FEF9EB;
+  --black: #0A0908;
+}
+
+body {
+  background-color: var(--green);
+  color: var(--black);
+}
+
+.tomato {
+  background-color: var(--red);
+  border: 5px solid var(--gold);
+  border-radius: 50%;
+  width: 250px;
+  height: 250px;
+  margin: auto;
+  color: var(--white);
+  font-weight: bold;
+  font-size: 3rem;
+}
+
+#time-left {
+  margin-bottom: 0%;
+  margin-top: 30%;
+}
+
+#start_stop {
+  margin-bottom: 0%;
+}
+
+.gridClass {
+  display: flex;
+  justify-content: space-evenly;
+  flex-flow: wrap;
+}
+
+button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
