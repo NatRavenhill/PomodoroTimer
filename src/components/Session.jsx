@@ -140,7 +140,7 @@ class Session extends Component {
         {
           isRunning: true,
         },
-        this.tick
+        () => { setTimeout(this.tick, 1000) }
       );
     }
   };
