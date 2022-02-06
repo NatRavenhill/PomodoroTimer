@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import "./Session.css";
-import BreakLength from "./BreakLength";
-import SessionLength from './SessionLength';
+import LengthChanger from './LengthChanger';
 import Tomato from './Tomato';
 
 class Session extends Component {
@@ -156,15 +155,17 @@ class Session extends Component {
           seconds={this.state.seconds}
         />
         <div className="gridClass">
-          <BreakLength
-            handleBreakDecrement={this.handleBreakDecrement}
-            handleBreakIncrement={this.handleBreakIncrement}
-            breakLength={this.state.breakLength}
+          <LengthChanger name={"break"} className={"Break-length"}
+            handleDecrement={this.handleBreakDecrement}
+            handleIncrement={this.handleBreakIncrement}
+            length={this.state.breakLength}
+            label={"Break Length"}
           />
-          <SessionLength
-            handleSessionDecrement={this.handleSessionDecrement}
-            handleSessionIncrement={this.handleSessionIncrement}
-            sessionLength={this.state.sessionLength}
+          <LengthChanger name={"session"} className={"Session-length"}
+            handleDecrement={this.handleSessionDecrement}
+            handleIncrement={this.handleSessionIncrement}
+            length={this.state.sessionLength}
+            label={"Session Length"}
           />
         </div>
         <audio
