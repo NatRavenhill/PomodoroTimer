@@ -1,180 +1,181 @@
-import React, { Component } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./Session.css";
 import BreakLength from "./BreakLength";
 import SessionLength from './SessionLength';
 import Tomato from './Tomato';
 
-class Session extends Component {
-  constructor() {
-    super();
-    this.state = this.defaultState();
-    this.tick = this.tick.bind(this);
-    this.handleBreakTime = this.handleBreakTime.bind(this);
-    this.setBreakLength = this.setBreakLength.bind(this);
-    this.setSessionLength = this.setSessionLength.bind(this);
+var defaultState = {
+  breakLength: 5,
+  sessionLength: 25,
+  seconds: 0,
+  minutes: 25,
+  timerLabel: "Session",
+  isBreak: false,
+};
 
-    this.beepRef = React.createRef();
-  }
+function Session() {
+  const [watchState, setWatchState] = useState(defaultState);
+  const beepRef = useRef();
+  const isRunning = useRef(false);
 
-  defaultState = () => {
-    return {
-      breakLength: 5,
-      sessionLength: 25,
-      isRunning: false,
-      seconds: 0,
-      minutes: 25,
-      timerLabel: "Session",
-      isBreak: false,
-    };
-  };
-
-  // Add FCC test script
-  componentWillMount() {
+  //on initual render
+  useEffect(() => {
+    // Add FCC test script
     const scriptTag = document.createElement("script");
     scriptTag.src =
       "https://cdn.freecodecamp.org/testable-projects-fcc/v1/bundle.js";
     scriptTag.async = true;
     document.body.appendChild(scriptTag);
-  }
+  }, []);
 
-  handleSessionIncrement = () => {
-    if (this.state.sessionLength < 60) {
-      this.setSessionLength(this.state.sessionLength + 1);
+  const handleSessionIncrement = () => {
+    if (watchState.sessionLength < 60) {
+      setSessionLength(watchState.sessionLength + 1);
     }
   };
 
-  handleSessionDecrement = () => {
-    if (this.state.sessionLength > 1) {
-      this.setSessionLength(this.state.sessionLength - 1);
+  const handleSessionDecrement = () => {
+    if (watchState.sessionLength > 1) {
+      setSessionLength(watchState.sessionLength - 1);
     }
   };
 
-  handleBreakIncrement = () => {
-    if (this.state.breakLength < 60) {
-      this.setBreakLength(this.state.breakLength + 1);
+  const handleBreakIncrement = () => {
+    if (watchState.breakLength < 60) {
+      setBreakLength(watchState.breakLength + 1)
     }
   };
 
-  handleBreakDecrement = () => {
-    if (this.state.breakLength > 1) {
-      this.setBreakLength(this.state.breakLength - 1);
+  const handleBreakDecrement = () => {
+    if (watchState.breakLength > 1) {
+      setBreakLength(watchState.breakLength - 1);
     }
   };
 
-  setSessionLength = (newSessionLength) => {
-    if (this.state.isBreak) {
-      this.setState({
-        sessionLength: newSessionLength,
-      });
+  const setSessionLength = (newSessionLength) => {
+    if (watchState.isBreak) {
+      setWatchState(prevState => ({ ...prevState, sessionLength: newSessionLength }));
     } else {
-      this.setState({
+      setWatchState(prevState => ({
+        ...prevState,
         sessionLength: newSessionLength,
         minutes: newSessionLength,
         seconds: 0,
-      });
+      }));
     }
   };
 
-  setBreakLength = (newBreakLength) => {
-    if (this.state.isBreak) {
-      this.setState({
+  const setBreakLength = (newBreakLength) => {
+    if (watchState.isBreak) {
+      setWatchState(prevState => ({
+        ...prevState,
         breakLength: newBreakLength,
         minutes: newBreakLength,
         seconds: 0,
-      });
+      }));
     } else {
-      this.setState({ breakLength: newBreakLength });
+      setWatchState(prevState => ({ ...prevState, breakLength: newBreakLength }));
     }
   };
 
-  handleReset = () => {
-    this.beepRef.current.load();
-    this.setState(this.defaultState());
+  const handleReset = () => {
+    handleStartStop();
+    beepRef.current.load();
+    setWatchState(defaultState);
   };
 
-  tick = () => {
-    if (!this.state.isRunning) return;
-
-    if (this.state.seconds > 0) {
-      this.setState((state) => ({
-        seconds: state.seconds - 1,
+  const handleBreakTime = () => {
+    if (watchState.isBreak) {
+      setWatchState(prevState => ({
+        ...prevState,
+        seconds: 0,
+        minutes: prevState.sessionLength,
+        timerLabel: "Session",
+        isBreak: false,
       }));
-    } else if (this.state.minutes > 0) {
-      this.setState((state) => ({
-        minutes: state.minutes - 1,
+      isRunning.current = true;
+    } else {
+      setWatchState(prevState => ({
+        ...prevState,
+        isBreak: true,
+        timerLabel: "Break",
+        minutes: prevState.breakLength,
+        seconds: 0,
+      }));
+    }
+  };
+
+  const handleStartStop = () => {
+    if (isRunning.current) {
+      isRunning.current = false;
+    } else {
+      isRunning.current = true
+      decreaseTime();
+    }
+  };
+
+  const tick = () => {
+    if (!isRunning.current) return;
+    decreaseTime();
+  }
+
+  const decreaseTime = () => {
+    if (watchState.seconds > 0) {
+      setWatchState(prevState => ({
+        ...prevState, seconds: prevState.seconds - 1,
+      }));
+    } else if (watchState.minutes > 0) {
+      setWatchState(prevState => ({
+        ...prevState,
+        minutes: prevState.minutes - 1,
         seconds: 59,
       }));
     } else {
-      this.beepRef.current.play();
-      this.handleBreakTime();
+      beepRef.current.play();
+      handleBreakTime();
     }
+  }
 
-    setTimeout(this.tick, 1000);
-  };
+  useEffect(() => {
+    if (isRunning.current) {
+      const timer = setTimeout(() => {
+        tick()
+      }, 1000);
 
-  handleBreakTime = () => {
-    if (this.state.isBreak) {
-      this.setState({
-        isRunning: true,
-        seconds: 0,
-        minutes: this.state.sessionLength,
-        timerLabel: "Session",
-        isBreak: false,
-      });
-    } else {
-      this.setState((state) => ({
-        isBreak: true,
-        timerLabel: "Break",
-        minutes: state.breakLength,
-        seconds: 0,
-      }));
+
+      return () => clearTimeout(timer);
     }
-  };
+  }, [watchState.seconds]);
 
-  handleStartStop = () => {
-    if (this.state.isRunning) {
-      this.setState({
-        isRunning: false,
-      });
-    } else {
-      this.setState(
-        {
-          isRunning: true,
-        },
-        this.tick
-      );
-    }
-  };
 
-  render() {
-    return (
-      <div className="App">
-        <h1 id="timer-label">{this.state.timerLabel}</h1>
-        <Tomato handleStartStop={this.handleStartStop}
-          handleReset={this.handleReset}
-          minutes={this.state.minutes}
-          seconds={this.state.seconds}
+  return (
+    <div className="App">
+      <h1 id="timer-label">{watchState.timerLabel}</h1>
+      <Tomato handleStartStop={handleStartStop}
+        handleReset={handleReset}
+        minutes={watchState.minutes}
+        seconds={watchState.seconds}
+      />
+      <div className="gridClass">
+        <BreakLength
+          handleBreakDecrement={handleBreakDecrement}
+          handleBreakIncrement={handleBreakIncrement}
+          breakLength={watchState.breakLength}
         />
-        <div className="gridClass">
-          <BreakLength
-            handleBreakDecrement={this.handleBreakDecrement}
-            handleBreakIncrement={this.handleBreakIncrement}
-            breakLength={this.state.breakLength}
-          />
-          <SessionLength
-            handleSessionDecrement={this.handleSessionDecrement}
-            handleSessionIncrement={this.handleSessionIncrement}
-            sessionLength={this.state.sessionLength}
-          />
-        </div>
-        <audio
-          id="beep"
-          ref={this.beepRef}
-          src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+        <SessionLength
+          handleSessionDecrement={handleSessionDecrement}
+          handleSessionIncrement={handleSessionIncrement}
+          sessionLength={watchState.sessionLength}
         />
       </div>
-    );
-  }
+      <audio
+        id="beep"
+        ref={beepRef}
+        src="https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav"
+      />
+    </div>
+  );
+
 }
 
 export default Session;
